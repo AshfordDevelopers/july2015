@@ -21,3 +21,129 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
+.energized {
+	background-color: $energized;
+}
+
+.error-popup {
+	.popup-head {
+		background-color: $assertive;
+		h3 {
+			color: white;
+		}
+	}
+}
+
+.home-content {
+	background-image: url("../img/home-background.png");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-size: cover;
+	height: 100vh;
+}
+
+.logo-container {
+	background-color: rgba(0, 0, 0, 0.5);
+	position: absolute;
+	top: 27%;
+	width: 100%;
+	height: 21%;
+	padding-left: 10px;
+	h1 {
+		color: white;
+		margin-top: 25%;
+	}
+}
+
+.logo-bubble {
+	position: absolute;
+	right: 5%;
+	font-size: 11em;
+	color: white;
+	top: -18%;
+}
+
+.logo-reply {
+	position: absolute;
+	font-size: 6em;
+	color: white;
+	right: 3%;
+	top: 12%;
+}
+
+.bar-home {
+	height: 60px;
+	.button {
+		line-height: 2.5em !important;
+		font-size: 1.2em !important;
+	}
+}
+
+.bar-clear {
+	background: none;
+}
+
+.footer-button {
+	margin: 0 !important;
+}
+
+.content-stable {
+	background-color: $stable;
+	height: 100vh;
+}
+
+.board-title_open {
+	color: white;
+	font-size: 24px !important;
+}
+
+.card-event-board {
+	h2 {
+		font-size: 24px;
+	}
+	p {
+		color: #616161;
+		font-size: 16px;
+	}
+}
+
+.board-subheader {
+	background-color: #E1F5FE;
+	.item {
+		border: none;
+		background-color: inherit;
+	}
+}
+
+.comment-list {
+	margin-top: 45px;
+}
+
+.comment {
+	min-height: 75px;
+	p {
+		color: #616161;
+		font-size: 16px;
+	}
+
+	.time-stamp {
+		position: absolute;
+		bottom: 2px;
+		right: 5px;
+		font-size: 14px;
+		color: lightgrey;
+	}
+}
+
+.comment-actions {
+	i {
+		margin-right: 5px;
+	}
+	&:first-child {
+		float: right;
+	}
+	&:last-child {
+		float: left;
+	}
+}
+
