@@ -1,0 +1,26 @@
+<ion-view view-title="My Event Boards">
+	<ion-nav-bar class="bar-positive">
+	</ion-nav-bar>
+
+	<ion-nav-buttons side="left">
+        <button class="button button-icon button-clear ion-navicon" menu-toggle="left">
+		</button>
+	</ion-nav-buttons>
+	<ion-nav-buttons side="right">
+		<button class='button icon ion-plus' ui-sref="app.boards.newBoard"></button>
+  	</ion-nav-buttons>
+
+  	<ion-content>
+    	<ul class="list">
+			<li class="card" data-ng-repeat="(key, board) in eventBoards">
+				<div class="item card-event-board">
+					<h2>
+						{{board.title}}
+					</h2>
+					<p>Comments: {{board.commentCount}}</p>
+					<p>Last activity: {{board.lastCommentTime}}</p>
+				</div>
+			</li>
+	    </ul>
+  	</ion-content>
+</ion-view>
