@@ -24,10 +24,18 @@
 		</div>
 
 	  	<ion-content>
-			<!-- refresher -->
+	  		<ion-refresher
+				pulling-text="Pull to refresh..."
+			    on-refresh="refreshComments()">
+			</ion-refresher>
+
+			<div class="padding" style="margin-top: 60px;" data-ng-if="!comments || comments.length === 0">
+				<h4>No comments so far, add one now!</h4>
+			</div>
+
 	    	<ul class="list comment-list">
 				<li class="card" data-ng-repeat="comment in comments">
-					<comment-card comment="comment"></comment-card>
+					<comment-card comment="comment" on-delete="refreshComments(true)"></comment-card>
 				</li>
 		    </ul>
 	  	</ion-content>

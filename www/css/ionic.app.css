@@ -7741,6 +7741,12 @@ a.button {
   color: #616161;
   font-size: 16px; }
 
+.card-header {
+  max-width: 90%; }
+
+.card-delete {
+  float: right; }
+
 .board-subheader {
   background-color: #E1F5FE; }
   .board-subheader .item {

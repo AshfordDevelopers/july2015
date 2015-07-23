@@ -6,26 +6,19 @@
 
 	NewBoardCtrl.$inject = [
 		"$scope",
-		"UserBoardsService",
-		"$state",
-		"BoardFactory"
+		"EventBoardsService",
+		"$state"
 	];
 
     function NewBoardCtrl(
     	$scope,
-    	UserBoardsService,
-    	$state,
-    	BoardFactory
+    	EventBoardsService,
+    	$state
 	){
-		var ctrl = this;
-		ctrl.helloWorld = function() {
-			console.log("Hello World");
-		};
-
-		$scope.board = BoardFactory.$create();
+		$scope.board = EventBoardsService.$create();
 
 		$scope.save = function() {
-			UserBoardsService.saveNewBoard($scope.board)
+			EventBoardsService.saveNewBoard($scope.board)
 				.then(function() {
 					$state.go("app.boards.myEventBoards");
 				});

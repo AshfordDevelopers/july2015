@@ -6,18 +6,20 @@
 
 	MenuCtrl.$inject = [
 		"$scope",
-		"UserBoardsService",
+		"EventBoardsService",
 		"$ionicPopup",
 		"$state",
-		"UserService"
+		"UserService",
+		"Auth"
 	];
 
     function MenuCtrl(
     	$scope,
-    	UserBoardsService,
+    	EventBoardsService,
     	$ionicPopup,
     	$state,
-    	UserService
+    	UserService,
+    	Auth
 	){
 		$scope.viewBoard = function() {
 	  		$scope.remoteBoard = {
@@ -57,6 +59,7 @@
 		};
 
 		$scope.logOut = function() {
+			Auth.$unauth();
 			UserService.user = null;
 			$state.go("home");
 		};

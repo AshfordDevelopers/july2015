@@ -5,31 +5,31 @@
         .service("UserService", UserService);
 
     UserService.$inject = [
-        "$q"
+        "$q",
+        "$firebaseArray"
     ];
 
     function UserService(
-        $q
+        $q,
+        $firebaseArray
     ) {
         var that = this;
 
-        var userProfiles = {
-            '1': {
-                $id: '1',
-                emailAddress: "test",
-                password: "test",
-                fullName: "Luke Jones",
-                subscriptions: {}
-            }
-        };
+        var ref = new Firebase(crowdResponseHosts.firebase + "/userProfiles");
 
         that.user = null;
 
-        that.getUserProfile = function(auth) {
-            that.user = userProfiles[auth.uid];
+        that.getUserProfile = function(userAccount) {
             return $q(function(resolve, reject) {
-                if (that.user) {
-                    resolve(that.user);
+                if (userAccount) {
+                    ref.child(userAccount.uid)
+                        .once("value", function(snapshot) {
+                            that.user = snapshot.val();
+                            if (!that.user.hasOwnProperty("subscriptions")) {
+                                that.user.subscriptions = {};
+                            }
+                            resolve(that.user);
+                        }, reject);
                 } else {
                     reject();
                 }
@@ -38,25 +38,52 @@
 
         that.createProfile = function(user) {
             return $q(function(resolve, reject) {
-                var index = Object.keys(userProfiles).length + 1;
-                userProfiles[index] = user;
-                userProfiles[index].subscriptions = {};
-                resolve();
+                user.subscriptions = {};
+
+                var onComplete = function(err) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve()
+                    }
+                };
+
+                ref.child(user.uid).set(user, onComplete);
             });
-        };
+        }
 
         that.findUserProfile = function(userId) {
             return $q(function(resolve, reject) {
-                resolve(userProfiles[userId]);
+                ref.child(userId)
+                    .once("value", function(snapshot) {
+                        resolve(snapshot.val());
+                    }, reject);
             });
         };
 
         that.subscribeToBoard = function(boardId) {
-            that.user.subscriptions[boardId] = new Date();
+            return $q(function(resolve, reject) {
+                ref.child(that.user.uid).child("subscriptions").child(boardId).set(new Date().getTime(), function() {
+                    ref.child(that.user.uid)
+                        .once("value", function(snapshot) {
+                            that.user = snapshot.val();
+                            resolve(snapshot.val());
+                        }, reject);
+                });
+            });
         };
 
         that.unsubscribeFromBoard = function(boardId) {
             delete that.user.subscriptions[boardId];
+            return $q(function(resolve, reject) {
+                ref.child(that.user.uid).child("subscriptions").child(boardId).remove(function() {
+                    ref.child(that.user.uid)
+                        .once("value", function(snapshot) {
+                            that.user = snapshot.val();
+                            resolve(snapshot.val());
+                        }, reject);
+                });
+            });
         };
     }
 })();

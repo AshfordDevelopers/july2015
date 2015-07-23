@@ -11,7 +11,8 @@
 		"eventBoard",
 		"BoardCommentsService",
 		"UserService",
-		"$ionicHistory"
+		"$ionicHistory",
+		"$filter"
 	];
 
 	function EventBoardCtrl(
@@ -21,23 +22,36 @@
 		eventBoard,
 		BoardCommentsService,
 		UserService,
-		$ionicHistory
+		$ionicHistory,
+		$filter
 	) {
 
-		$scope.comments = comments;
+		var orderCommentsByLikes = function(comments) {
+			return $filter("orderBy")(comments, function(comment) {
+				if (comment.hasOwnProperty("likes")) {
+					return Object.keys(comment.likes).length;	
+				} else {
+					return 0;
+				}
+			}, true);
+		};
+
+		$scope.comments = orderCommentsByLikes(comments);
 		$scope.eventBoard = eventBoard;
 		if ($scope.eventBoard) {
 			$scope.boardDetail = {
 				subscribed: (UserService.user.subscriptions.hasOwnProperty($scope.eventBoard.id)) ? true : false,
-				isOwner: ($scope.eventBoard.ownerId === UserService.user.$id) ? true : false
+				isOwner: ($scope.eventBoard.ownerId === UserService.user.uid) ? true : false
 			};
 
 			$scope.$watch("boardDetail.subscribed", function(subscribed) {
-				var alreadySubscribed = UserService.user.subscriptions.hasOwnProperty($scope.eventBoard.id);
-				if (subscribed && !alreadySubscribed) {
-					UserService.subscribeToBoard($scope.eventBoard.id);
-				} else if (!subscribed && alreadySubscribed) {
-					UserService.unsubscribeFromBoard($scope.eventBoard.id);
+				if (UserService.user.hasOwnProperty("subscriptions")) {
+					var alreadySubscribed = UserService.user.subscriptions.hasOwnProperty($scope.eventBoard.id);
+					if (subscribed && !alreadySubscribed) {
+						UserService.subscribeToBoard($scope.eventBoard.id);
+					} else if (!subscribed && alreadySubscribed) {
+						UserService.unsubscribeFromBoard($scope.eventBoard.id);
+					}
 				}
 			});
 		} else {
@@ -51,21 +65,27 @@
 				});
 		}
 
-		// $scope.refreshComments = function() {
-		// 	BoardCommentsService.getBoardComments($scope.eventBoard.id)
-		// 		.then(function(comments) {
-		// 			$scope.comments = comments;
-		// 			$scope.$broadcast('scroll.refreshComplete');
-		// 		});
-		// };
+		$scope.refreshComments = function() {
+			BoardCommentsService.getBoardComments($scope.eventBoard.id)
+				.then(function(comments) {
+					$scope.comments = orderCommentsByLikes(comments);
+					$scope.$broadcast('scroll.refreshComplete');
+				});
+		};
+
+		$scope.showBoardLink = function() {
+			$ionicPopup.alert({
+				title: "Get people talking!",
+				template: "<p>Here's your unique event board Id:</p><p style=\"text-align: center;\">" + $scope.eventBoard.id + "</p>"
+			});
+		};
 
 		$scope.newCommentPopUp = function() {
 			$scope.newComment = {
-				id: null,
 				boardId: $scope.eventBoard.id,
 				value: null,
-				createdDate: new Date(),
-				createdBy: UserService.user.$id,
+				createdDate: new Date().getTime(),
+				createdBy: UserService.user.uid,
 				likes: {}
 			};
 
@@ -96,7 +116,7 @@
 
 			myPopup.then(function(res) {
 				if (res) {
-					BoardCommentsService.addNewComment($scope.newComment)
+					BoardCommentsService.addNewComment($scope.newComment, $scope.eventBoard.commentCount)
 						.then(function() {
 							$scope.refreshComments();
 						});

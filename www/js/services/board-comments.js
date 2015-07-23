@@ -5,61 +5,101 @@
         .factory("BoardCommentsService", BoardCommentsService);
 
     BoardCommentsService.$inject = [
-    	"$q"
+        "$q",
+        "EventBoardsService",
+        "$ionicLoading",
+        "UserService"
     ];
 
     function BoardCommentsService(
-    	$q
-    ){
-    	var comments = {
-    		"1": {
-    			id: "1",
-    			boardId: "1",
-    			value: "This is soo cool",
-    			createdDate: new Date(2015,6,6,12,45),
-    			createdBy: "1",
-                likes: {
-                    "1": new Date(),
-                    "2": new Date()
+        $q,
+        EventBoardsService,
+        $ionicLoading,
+        UserService
+    ) {
+        var ref = new Firebase(crowdResponseHosts.firebase).child("boardComments");
+
+        var newComments = new Firebase(crowdResponseHosts.firebase)
+            .child("boardComments")
+            .orderByChild("createdDate")
+            .startAt(Date.now())
+            .on("child_added", function(comment) {
+                var newComment = comment.val();
+                if (newComment.createdBy !== UserService.user.uid) {
+                    $ionicLoading.show({
+                        template: "New comment: " + newComment.value,
+                        noBackdrop: true,
+                        duration: 2000
+                    });
                 }
-    		},
-    		"2": {
-    			id: "2",
-    			boardId: "1",
-    			value: "I wonder when it will be done?",
-    			createdDate: new Date(2015, 6, 6, 13, 10),
-    			createdBy: "1",
-                likes: {}
-    		}
-    	};
-
-    	// temp func
-    	var getComments = function(boardId) {
-    		var boardComments = [];
-    		for (var x in comments) {
-    			if (comments[x].boardId === boardId) {
-    				boardComments.push(comments[x]);
-    			}
-    		}
-
-    		return boardComments;
-    	};
+            });
 
         return {
-        	getBoardComments: function(boardId) {
-				return $q(function(resolve, reject) {
-                    resolve(getComments(boardId));
-				});
-        	},
-            likeComment: function(commentId, userId) {
-                comments[commentId].likes[userId] = new Date();
-            },
-            addNewComment: function(comment) {
+            getBoardComments: function(boardId) {
                 return $q(function(resolve, reject) {
-                    var index = Object.keys(comments).length + 1;
-                    comment.id = index;
-                    comments[index] = comment;
-                    resolve();
+                    ref.orderByChild("boardId")
+                        .startAt(boardId)
+                        .endAt(boardId)
+                        .once("value", function(snapshot) {
+                            var comments = [];
+                            snapshot.forEach(function(childSnapshot) {
+                                var comment = childSnapshot.val();
+                                comment.$id = childSnapshot.key();
+                                comments.push(comment);
+                            });
+
+                            resolve(comments);
+                        });
+                });
+            },
+            likeComment: function(commentId, userId) {
+                return $q(function(resolve, reject) {
+                    ref.child(commentId).child("likes").child(userId).set(Firebase.ServerValue.TIMESTAMP, function() {
+                        // resolve with the original comment value so it can be updated in the calling service
+                        ref.child(commentId)
+                            .once("value", function(snapshot) {
+                                resolve(snapshot.val());
+                            }, reject);
+                    });
+                })
+            },
+            addNewComment: function(comment, currentCommentLength) {
+                return $q(function(resolve, reject) {
+                    var newComment = ref.push();
+                    newComment.set(comment, function(err) {
+                        if (err) {
+                            reject();
+                        } else {
+                            EventBoardsService.updateEventBoardCommentStatus(comment.boardId)
+                                .then(resolve(newComment.key()));
+                        }
+                    });
+                });
+            },
+            deleteAllBoardComments: function(boardId) {
+                return $q(function(resolve, reject) {
+                    ref.transaction(function(comments) {
+                        if (comments) {
+                            for (var id in comments) {
+                                if (comments[id].boardId === boardId) {
+                                    delete comments[id];
+                                }
+                            }
+                        }
+                        return comments;
+                    },
+                        function(err) {
+                            if (err) {
+                                reject();
+                            } else {
+                                resolve();
+                            }
+                        });
+                });
+            },
+            deleteComment: function(commentId) {
+                return $q(function(resolve, reject) {
+                    ref.child(commentId).remove(resolve);
                 });
             }
         };

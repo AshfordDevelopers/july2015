@@ -5,54 +5,54 @@
         .factory("LoginService", LoginService);
 
     LoginService.$inject = [
-    	'$q'
+        "$q",
+        "Auth"
     ];
 
     var users = {
-    	'1': {
-    		$id: '1',
-    		emailAddress: "test",
-    		password: "test"
-    	}
+        '1': {
+            $id: '1',
+            emailAddress: "test",
+            password: "test"
+        }
     };
 
     function LoginService(
-    	$q
-    ){
-    	var validateUser = function(user) {
-    		// temporary implementation
-    		for (var account in users) {
-    			if (users[account].emailAddress === user.emailAddress &&
-    				users[account].password === user.password) {
-    				return users[account];
-    			}
-    		}
-    		return null;
-    	};
-
+        $q,
+        Auth
+    ) {
         return {
-        	logIn: function(user) {
- 			  	return $q(function(resolve, reject) {
- 			  		var account = validateUser(user);
- 			  		if (account) {
- 			  			resolve(account);
- 			  		}
- 			  		else {
- 			  			reject();
- 			  		}
- 			  	});
-        	},
+            logIn: function(user) {
+                return $q(function(resolve, reject) {
+                    Auth.$authWithPassword({
+                        email: user.email,
+                        password: user.password
+                    })
+                        .then(function(authData) {
+                            console.log("Logged in as:", authData.uid);
+                            resolve(authData);
+                        })
+                        .catch(function(error) {
+                            console.error("Authentication failed:", error);
+                            reject(error);
+                        });
+                });
+            },
             signUpUser: function(newUser) {
                 // register new user with ionic
                 return $q(function(resolve, reject) {
-                    var index = Object.keys(users).length + 1;
-                    users[index] = {
-                        $id: index,
-                        emailAddress: newUser.emailAddress,
+                    Auth.$createUser({
+                        email: newUser.email,
                         password: newUser.password
-                    };
-                    users[index].fullName = newUser.fullName;
-                    resolve(users[index]);
+                    })
+                        .then(function(userData) {
+                            userData.email = newUser.email;
+                            userData.fullName = newUser.fullName;
+                            resolve(userData);
+                        })
+                        .catch(function(error) {
+                            reject(error);
+                        });
                 });
             }
         };

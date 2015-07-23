@@ -2,21 +2,17 @@
     "use strict";
 
     angular.module("crowdResponse")
-        .service("AuthService", AuthService);
+        .factory("Auth", Auth);
 
-    AuthService.$inject = [
+    Auth.$inject = [
     	"$firebaseAuth"
     ];
 
-    function AuthService(
+    function Auth(
 		$firebaseAuth
     ){
-        var ref = new Firebase("https://resplendent-heat-6845.firebaseio.com");
+        var ref = new Firebase(crowdResponseHosts.firebase);
 
-        var auth = $firebaseAuth(ref);
-
-        this.requireAuth = function() {
-        	return auth.$requireAuth();
-        };
+        return $firebaseAuth(ref);
     }
 })();

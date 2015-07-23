@@ -4,17 +4,17 @@
     <button class="button icon ion-close-round" data-ng-click="closeLoginModal()"></button>
   </ion-header-bar>
   <ion-content>
-    <form data-ng-submit="loginUser()">
+    <form name="loginForm" data-ng-submit="loginUser()">
       <label class="item item-input">
         <span class="input-label">Email address</span>
-        <input type="text" ng-model="loginData.emailAddress">
+        <input name="email" type="email" ng-model="loginData.email" required>
       </label>
       <label class="item item-input">
         <span class="input-label">Password</span>
-        <input type="password" ng-model="loginData.password">
+        <input name="password" type="password" ng-model="loginData.password">
       </label>
       <label class="item">
-        <button class="button button-block button-positive" type="submit">Log in</button>
+        <button class="button button-block button-positive" type="submit" data-ng-disabled="loginForm.$invalid">Log in</button>
       </label>
     </form>
     <h3 data-ng-if="loginError">You screwed it up!</h3>

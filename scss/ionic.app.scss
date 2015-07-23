@@ -107,6 +107,14 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 	}
 }
 
+.card-header {
+	max-width: 90%;
+}
+
+.card-delete {
+	float: right;
+}
+
 .board-subheader {
 	background-color: #E1F5FE;
 	.item {

@@ -25,9 +25,14 @@
 				abstract: true,
 				templateUrl: "templates/menu.html",
 				controller: "MenuCtrl",
+				cache: false,
 				resolve: {
-					user: ["UserService", function(UserService) {
-						return UserService.getUserProfile({uid: "1"});
+					auth: ["Auth", function(Auth) {
+						return Auth.$waitForAuth();
+					}],
+					user: ["auth", "UserService", function(auth, UserService) {
+						// console.log(auth);
+						return UserService.getUserProfile(auth);
 					}]
 				}
 			})
@@ -53,6 +58,7 @@
 
 			.state('app.boards.myEventBoards', {
 				url: "/myEventBoards",
+				cache: false,
 				views: {
 					'boardContent': {
 						templateUrl: "templates/my-event-boards.html",
@@ -60,8 +66,24 @@
 				  	}
 				},
 				resolve: {
-					userEventBoards: ["user", "UserBoardsService", function(user, UserBoardsService) {
-						return UserBoardsService.getUserEventBoards();
+					eventBoards: ["user", "EventBoardsService", function(user, EventBoardsService) {
+						return EventBoardsService.getUserEventBoards();
+					}]
+				}
+			})
+
+			.state('app.boards.subscribedBoards', {
+				url: "/subscribedBoards",
+				cache: false,
+				views: {
+					'boardContent': {
+						templateUrl: "templates/subscribed-boards.html",
+						controller: "SubscribedBoardsCtrl"
+				  	}
+				},
+				resolve: {
+					eventBoards: ["user", "EventBoardsService", function(user, EventBoardsService) {
+						return EventBoardsService.getUserSubscribedBoards();
 					}]
 				}
 			})
@@ -75,11 +97,11 @@
 					}
 				},
 				resolve: {
-					comments: ["BoardCommentsService", "$stateParams", function(BoardCommentsService, $stateParams) {
+					comments: ["user", "BoardCommentsService", "$stateParams", function(user, BoardCommentsService, $stateParams) {
 						return BoardCommentsService.getBoardComments($stateParams.boardId);
 					}],
-					eventBoard: ["UserBoardsService", "$stateParams", function(UserBoardsService, $stateParams) {
-						return UserBoardsService.getEventBoard($stateParams.boardId);
+					eventBoard: ["EventBoardsService", "$stateParams", function(EventBoardsService, $stateParams) {
+						return EventBoardsService.getEventBoard($stateParams.boardId);
 					}]
 				}
 			})

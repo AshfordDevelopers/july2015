@@ -1,7 +1,7 @@
 <ion-modal-view>
   <ion-header-bar class="bar bar-positive">
     <h1 class="title">Sign up</h1>
-    <button class="button icon ion-close-round" data-ng-click="closeSignupModal()"></button>
+    <button class="button icon ion-close-round" data-ng-click="closeSignUpModal()"></button>
   </ion-header-bar>
   <ion-content>
     <form name="signUpForm" data-ng-submit="signUpUser()">
@@ -11,7 +11,7 @@
       </label>
       <label class="item item-input">
         <span class="input-label">Email address</span>
-        <input name="emailAddress" type="email" ng-model="registration.emailAddress" required>
+        <input name="email" type="email" ng-model="registration.email" required>
       </label>
       <label class="item item-input">
         <span class="input-label">Password</span>

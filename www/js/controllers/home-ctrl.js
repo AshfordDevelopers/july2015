@@ -9,7 +9,8 @@
 		"$ionicModal",
 		"LoginService",
 		"UserService",
-		"$state"
+		"$state",
+		"$ionicLoading"
 	];
 
 	function HomeCtrl(
@@ -17,7 +18,8 @@
 		$ionicModal,
 		LoginService,
 		UserService,
-		$state
+		$state,
+		$ionicLoading
 	) {
 		$ionicModal.fromTemplateUrl('templates/login.html', {
 			scope: $scope,
@@ -36,7 +38,7 @@
 		$scope.login = function() {
 			$scope.loginError = false;
 			$scope.loginData = {
-				emailAddress: null,
+				email: null,
 				password: null
 			};
 			$scope.loginModal.show();
@@ -47,12 +49,18 @@
 		};
 
 		$scope.loginUser = function() {
+			$ionicLoading.show({
+				template: "Elves at work..."
+			});
+
 			LoginService.logIn($scope.loginData)
 				.then(function(account) {
 					UserService.getUserProfile(account);
-					$state.go('app.dashboard');
+					$ionicLoading.hide();
+					$state.go('app.boards.myEventBoards');
 					$scope.loginModal.hide();
 				}, function() {
+					$ionicLoading.hide();
 					$scope.loginError = true;
 				});
 		};
@@ -60,22 +68,27 @@
 		$scope.signUp = function() {
 			$scope.registration = {
 				fullName: null,
-				emailAddress: null,
+				email: null,
 				password: null
 			};
 
 			$scope.signUpModal.show();
 		};
 
-		$scope.closeSignUpUser = function() {
+		$scope.closeSignUpModal = function() {
 			$scope.signUpModal.hide();
 		};
 
 		$scope.signUpUser = function() {
+			$ionicLoading.show({
+				template: "Elves at work..."
+			});
+
 			LoginService.signUpUser($scope.registration)
 				.then(UserService.createProfile)
 				.then(function() {
-					$scope.closeSignUpUser();
+					$ionicLoading.hide();
+					$scope.closeSignUpModal();
 					$scope.login();
 				});
 		};

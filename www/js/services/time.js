@@ -6,9 +6,14 @@
 
     function TimeService(){
         var self = this;
-        self.name = "Hello World";
 
-        self.timeSince = function timeSince(date) {
+        self.timeSince = function timeSince(dateValue) {
+			var date;
+			if (typeof(dateValue) !== "object") {
+				var date = new Date(dateValue);
+			} else {
+				date = dateValue;
+			}
 		    var seconds = Math.floor((new Date() - date) / 1000);
 
 		    var interval = Math.floor(seconds / 31536000);

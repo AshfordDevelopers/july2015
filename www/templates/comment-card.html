@@ -1,5 +1,6 @@
 <div class="item item-text-wrap comment">
-	<h3>{{::commentCreator}} - {{::timeSinceCreation}}</h3>
+	<i class="icon ion-close-round card-delete" data-ng-click="deleteComment()" data-ng-if="canDelete"></i>
+	<h3 class="card-header">{{::commentCreator}} - {{::timeSinceCreation}}</h3>
 	<p>
 		{{comment.value}}
 	</p>

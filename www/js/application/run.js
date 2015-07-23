@@ -28,11 +28,13 @@
 	  	});
 
 	  	$rootScope.$on("$routeChangeError", function(event, next, previous, error) {
-	  		$location.path("/login");
+	  		$location.path("/home");
 		});
 
-		$rootScope.$on("$stateChangeError", function(event, next, previous, error) {
-  			$location.path("/login");
+		$rootScope.$on("$stateChangeError", function(event, toState, toParams, fromState, fromParams, error) {
+  			console.log("State change error");
+            console.log(error);
+            $location.path("/home");
 		});
     }
 })();
