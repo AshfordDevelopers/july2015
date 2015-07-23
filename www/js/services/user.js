@@ -25,8 +25,15 @@
 
         that.user = null;
 
-        that.getUserProfile = function(userAccount) {
-            that.user = userProfiles[userAccount.$id];
+        that.getUserProfile = function(auth) {
+            that.user = userProfiles[auth.uid];
+            return $q(function(resolve, reject) {
+                if (that.user) {
+                    resolve(that.user);
+                } else {
+                    reject();
+                }
+            });
         };
 
         that.createProfile = function(user) {
@@ -35,16 +42,6 @@
                 userProfiles[index] = user;
                 userProfiles[index].subscriptions = {};
                 resolve();
-            });
-        }
-
-        that.getUserAccount = function() {
-            return $q(function(resolve, reject) {
-                if (that.user) {
-                    resolve(that.user);
-                } else {
-                    reject();
-                }
             });
         };
 

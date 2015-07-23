@@ -1,1 +1,1 @@
-angular.module('crowdResponse', ["ionic"]);
+angular.module('crowdResponse', ['ionic', "firebase"]);

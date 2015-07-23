@@ -18,5 +18,10 @@
 		var ctrl = this;
 
 		$scope.eventBoards = userEventBoards;
+
+		$scope.viewBoard = function(boardId) {
+			$state.go("app.boards.eventBoard", { boardId: boardId});
+		};
 	}
 })();
+		

@@ -12,7 +12,7 @@
 
   	<ion-content>
     	<ul class="list">
-			<li class="card" data-ng-repeat="(key, board) in eventBoards">
+			<li class="card" data-ng-repeat="(key, board) in eventBoards" data-ng-click="viewBoard(board.id)">
 				<div class="item card-event-board">
 					<h2>
 						{{board.title}}

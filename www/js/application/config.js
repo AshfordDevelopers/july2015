@@ -27,7 +27,7 @@
 				controller: "MenuCtrl",
 				resolve: {
 					user: ["UserService", function(UserService) {
-						return UserService.getUserAccount;
+						return UserService.getUserProfile({uid: "1"});
 					}]
 				}
 			})
@@ -60,10 +60,39 @@
 				  	}
 				},
 				resolve: {
-					userEventBoards: ["UserBoardsService", function(UserBoardsService) {
+					userEventBoards: ["user", "UserBoardsService", function(user, UserBoardsService) {
 						return UserBoardsService.getUserEventBoards();
 					}]
 				}
+			})
+
+			.state("app.boards.eventBoard", {
+				url: "/:boardId",
+				views: {
+					"boardContent": {
+						templateUrl: "templates/event-board.html",
+						controller: "EventBoardCtrl"
+					}
+				},
+				resolve: {
+					comments: ["BoardCommentsService", "$stateParams", function(BoardCommentsService, $stateParams) {
+						return BoardCommentsService.getBoardComments($stateParams.boardId);
+					}],
+					eventBoard: ["UserBoardsService", "$stateParams", function(UserBoardsService, $stateParams) {
+						return UserBoardsService.getEventBoard($stateParams.boardId);
+					}]
+				}
+			})
+
+			.state('app.boards.newBoard', {
+				url: "/newBoard",
+				views: {
+					"boardContent": {
+						templateUrl: "templates/new-board.html",
+						controller: "NewBoardCtrl"
+					}
+				}
+
 			});
 
 		// if none of the above states are matched, use this as the fallback

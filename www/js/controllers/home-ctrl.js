@@ -67,7 +67,7 @@
 			$scope.signUpModal.show();
 		};
 
-		$scope.closeSignUpModal = function() {
+		$scope.closeSignUpUser = function() {
 			$scope.signUpModal.hide();
 		};
 

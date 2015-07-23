@@ -1,0 +1,36 @@
+<ion-view view-title="{{::eventBoard.title}}">
+	<ion-nav-bar class="bar-calm">
+		<ion-nav-back-button>
+  		</ion-nav-back-button>
+	</ion-nav-bar>
+
+	<ion-nav-buttons side="right">
+		<button class='button' data-ng-click="newCommentPopUp()">Comment</button>
+	</ion-nav-buttons>
+
+	<div data-ng-if="eventBoard">
+
+
+		<div class="bar bar-subheader board-subheader">
+			<div class="item item-icon-right"
+				data-ng-if="::boardDetail.isOwner">
+				Share board
+				<i class="icon ion-share" data-ng-click="showBoardLink()"></i>
+			</div>
+			<div class="board-subheader"
+				data-ng-if="::!boardDetail.isOwner">
+				<ion-toggle data-ng-model="boardDetail.subscribed" toggle-class="toggle-balanced">Subscribe</ion-toggle>
+			</div>
+		</div>
+
+	  	<ion-content>
+			<!-- refresher -->
+	    	<ul class="list comment-list">
+				<li class="card" data-ng-repeat="comment in comments">
+					<comment-card comment="comment"></comment-card>
+				</li>
+		    </ul>
+	  	</ion-content>
+	</div>
+
+</ion-view>
